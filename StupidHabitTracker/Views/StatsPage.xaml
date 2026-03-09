@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:StupidHabitTracker.ViewModels"
+             x:Class="StupidHabitTracker.Views.StatsPage"
+             x:DataType="vm:StatsViewModel"
+             Title="Stats"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <Grid RowDefinitions="Auto,*" Padding="24,60,24,24" BackgroundColor="{StaticResource BackgroundLight}">
+
+            <!-- Header -->
+            <VerticalStackLayout Grid.Row="0" Spacing="4" Padding="0,0,0,16">
+                <Label Text="Statistics"
+                       Style="{StaticResource TitleLabel}"
+                       FontSize="32" />
+                <Label Text="Your progress at a glance"
+                       Style="{StaticResource SubtitleLabel}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="1" Spacing="16">
+
+                <!-- Empty State -->
+                <VerticalStackLayout IsVisible="{Binding HasData, Converter={StaticResource BoolInverse}}"
+                                     VerticalOptions="Center"
+                                     HorizontalOptions="Center"
+                                     Spacing="12"
+                                     Padding="0,60,0,0">
+                    <Label Text="📊"
+                           FontSize="64"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="No data yet"
+                           Style="{StaticResource SubtitleLabel}"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="Complete some sessions to see your stats"
+                           Style="{StaticResource CaptionLabel}"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <!-- Stats Cards Grid -->
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12"
+                      IsVisible="{Binding HasData}">
+
+                    <!-- Total Sessions -->
+                    <Frame Grid.Row="0" Grid.Column="0" Style="{StaticResource StatCard}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Sessions" Style="{StaticResource CaptionLabel}" />
+                            <Label Text="{Binding TotalSessions}"
+                                   FontSize="32" FontAttributes="Bold"
+                                   TextColor="{StaticResource Primary}" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Total Time -->
+                    <Frame Grid.Row="0" Grid.Column="1" Style="{StaticResource StatCard}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Total Time" Style="{StaticResource CaptionLabel}" />
+                            <Label Text="{Binding TotalTimeDisplay}"
+                                   FontSize="32" FontAttributes="Bold"
+                                   TextColor="{StaticResource Primary}" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Current Streak -->
+                    <Frame Grid.Row="1" Grid.Column="0" Style="{StaticResource StatCard}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="🔥 Current Streak" Style="{StaticResource CaptionLabel}" />
+                            <Label FontSize="32" FontAttributes="Bold"
+                                   TextColor="{StaticResource Accent}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding CurrentStreak}" />
+                                        <Span Text=" days" FontSize="16" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Best Streak -->
+                    <Frame Grid.Row="1" Grid.Column="1" Style="{StaticResource StatCard}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="⭐ Best Streak" Style="{StaticResource CaptionLabel}" />
+                            <Label FontSize="32" FontAttributes="Bold"
+                                   TextColor="{StaticResource Success}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding BestStreak}" />
+                                        <Span Text=" days" FontSize="16" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+                <!-- Weekly Chart -->
+                <Frame Style="{StaticResource Card}" Padding="20" IsVisible="{Binding HasData}">
+                    <VerticalStackLayout Spacing="16">
+                        <Label Text="This Week"
+                               Style="{StaticResource SubtitleLabel}"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimaryLight}" />
+
+                        <!-- Bar Chart -->
+                        <HorizontalStackLayout HeightRequest="180"
+                              Spacing="8"
+                              HorizontalOptions="Center"
+                              BindableLayout.ItemsSource="{Binding WeeklyData}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:DayStats">
+                                    <VerticalStackLayout VerticalOptions="End"
+                                                         HorizontalOptions="Center"
+                                                         Spacing="4"
+                                                         WidthRequest="36">
+                                        <!-- Value label -->
+                                        <Label Text="{Binding DisplayValue}"
+                                               Style="{StaticResource CaptionLabel}"
+                                               HorizontalTextAlignment="Center"
+                                               FontSize="11" />
+                                        <!-- Bar -->
+                                        <BoxView HeightRequest="{Binding BarHeight}"
+                                                 WidthRequest="28"
+                                                 CornerRadius="8,8,8,8"
+                                                 Color="{StaticResource Primary}">
+                                            <BoxView.Triggers>
+                                                <DataTrigger TargetType="BoxView" Binding="{Binding IsToday}" Value="True">
+                                                    <Setter Property="Color" Value="{StaticResource Accent}" />
+                                                </DataTrigger>
+                                            </BoxView.Triggers>
+                                        </BoxView>
+                                        <!-- Day label -->
+                                        <Label Text="{Binding DayLabel}"
+                                               Style="{StaticResource CaptionLabel}"
+                                               HorizontalTextAlignment="Center"
+                                               FontSize="12">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsToday}" Value="True">
+                                                    <Setter Property="FontAttributes" Value="Bold" />
+                                                    <Setter Property="TextColor" Value="{StaticResource Accent}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Average Session -->
+                <Frame Style="{StaticResource Card}" Padding="16" IsVisible="{Binding HasData}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Avg. Session Length" Style="{StaticResource BodyLabel}" VerticalTextAlignment="Center" />
+                        <Label Grid.Column="1"
+                               Text="{Binding AverageSessionDisplay}"
+                               FontSize="20" FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}"
+                               VerticalTextAlignment="Center" />
+                    </Grid>
+                </Frame>
+
+                <!-- Top Habits -->
+                <Frame Style="{StaticResource Card}" Padding="20" IsVisible="{Binding HasData}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Top Habits"
+                               Style="{StaticResource SubtitleLabel}"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimaryLight}" />
+
+                        <CollectionView ItemsSource="{Binding TopHabits}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:HabitStat">
+                                    <Grid ColumnDefinitions="*,Auto,Auto" Padding="0,8" ColumnSpacing="12">
+                                        <Label Text="{Binding Name}"
+                                               Style="{StaticResource BodyLabel}"
+                                               VerticalTextAlignment="Center" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding SessionCount, StringFormat='{0} sessions'}"
+                                               Style="{StaticResource CaptionLabel}"
+                                               VerticalTextAlignment="Center" />
+                                        <Label Grid.Column="2"
+                                               Text="{Binding TotalDisplay}"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource Primary}"
+                                               VerticalTextAlignment="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Bottom padding -->
+                <BoxView HeightRequest="24" Color="Transparent" />
+
+            </VerticalStackLayout>
+
+        </Grid>
+    </ScrollView>
+
+</ContentPage>

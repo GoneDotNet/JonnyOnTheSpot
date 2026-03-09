@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:WeatherApp.ViewModels"
+             xmlns:models="clr-namespace:WeatherApp.Models"
+             x:Class="WeatherApp.Views.WeatherDetailPage"
+             x:DataType="vm:WeatherDetailViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid BackgroundColor="#0F1624">
+        <ScrollView>
+            <VerticalStackLayout Spacing="16" Padding="16,60,16,30">
+
+                <!-- Back Button -->
+                <HorizontalStackLayout Spacing="8">
+                    <Button Text="‹"
+                            FontSize="28"
+                            TextColor="White"
+                            BackgroundColor="Transparent"
+                            Clicked="OnBackClicked"
+                            Padding="0"
+                            WidthRequest="40"
+                            HeightRequest="40" />
+                    <Label Text="{Binding Location.DisplayName}"
+                           FontSize="18"
+                           TextColor="#AABBCC"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <!-- Hero Section -->
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="4" Padding="0,10">
+                    <Label Text="{Binding Weather.Current.Icon}"
+                           FontSize="64"
+                           HorizontalOptions="Center" />
+                    <Label Text="{Binding Weather.Current.Temperature, StringFormat='{0:F0}°'}"
+                           FontSize="80"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center" />
+                    <Label Text="{Binding Weather.Current.Description}"
+                           FontSize="20"
+                           TextColor="#AABBCC"
+                           HorizontalOptions="Center" />
+                    <Label HorizontalOptions="Center"
+                           TextColor="#8899AA"
+                           FontSize="16">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Feels like " />
+                                <Span Text="{Binding Weather.Current.ApparentTemperature, StringFormat='{0:F0}°'}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+
+                <!-- Quick Stats Row -->
+                <Grid ColumnDefinitions="*,*,*,*"
+                      Padding="0,8">
+                    <VerticalStackLayout HorizontalOptions="Center" Spacing="4">
+                        <Label Text="💨" FontSize="20" HorizontalOptions="Center" />
+                        <Label Text="{Binding Weather.Current.WindSpeed, StringFormat='{0:F0} mph'}"
+                               TextColor="White" FontSize="14" HorizontalOptions="Center" />
+                        <Label Text="Wind" TextColor="#667788" FontSize="12" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
+                        <Label Text="💧" FontSize="20" HorizontalOptions="Center" />
+                        <Label Text="{Binding Weather.Current.Humidity, StringFormat='{0:F0}%'}"
+                               TextColor="White" FontSize="14" HorizontalOptions="Center" />
+                        <Label Text="Humidity" TextColor="#667788" FontSize="12" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
+                        <Label Text="☀️" FontSize="20" HorizontalOptions="Center" />
+                        <Label Text="{Binding Weather.Current.UvIndex, StringFormat='{0:F0}'}"
+                               TextColor="White" FontSize="14" HorizontalOptions="Center" />
+                        <Label Text="UV Index" TextColor="#667788" FontSize="12" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" Spacing="4">
+                        <Label Text="🌡️" FontSize="20" HorizontalOptions="Center" />
+                        <Label Text="{Binding Weather.Current.Pressure, StringFormat='{0:F0} hPa'}"
+                               TextColor="White" FontSize="14" HorizontalOptions="Center" />
+                        <Label Text="Pressure" TextColor="#667788" FontSize="12" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Hourly Forecast -->
+                <Border StrokeThickness="0" StrokeShape="RoundRectangle 16" BackgroundColor="#1A2744" Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="HOURLY FORECAST" FontSize="13" TextColor="#667788" FontAttributes="Bold" />
+                        <CollectionView ItemsSource="{Binding Weather.HourlyForecasts}"
+                                        ItemsLayout="HorizontalList"
+                                        HeightRequest="100">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:HourlyForecast">
+                                    <VerticalStackLayout Spacing="6" Padding="10,0" WidthRequest="60">
+                                        <Label Text="{Binding TimeLabel}"
+                                               TextColor="#8899AA" FontSize="12" HorizontalOptions="Center" />
+                                        <Label Text="{Binding Icon}"
+                                               FontSize="20" HorizontalOptions="Center" />
+                                        <Label Text="{Binding Temperature, StringFormat='{0:F0}°'}"
+                                               TextColor="White" FontSize="16" FontAttributes="Bold"
+                                               HorizontalOptions="Center" />
+                                        <Label Text="{Binding PrecipitationProbability, StringFormat='{0}%'}"
+                                               TextColor="#5B9BD5" FontSize="11" HorizontalOptions="Center"
+                                               IsVisible="{Binding PrecipitationProbability, Converter={StaticResource IntToBoolConverter}}" />
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- 7-Day Forecast -->
+                <Border StrokeThickness="0" StrokeShape="RoundRectangle 16" BackgroundColor="#1A2744" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="7-DAY FORECAST" FontSize="13" TextColor="#667788" FontAttributes="Bold" />
+                        <CollectionView ItemsSource="{Binding Weather.DailyForecasts}"
+                                        SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:DailyForecast">
+                                    <Grid ColumnDefinitions="60,30,*,50"
+                                          Padding="0,8"
+                                          HeightRequest="36">
+                                        <Label Text="{Binding DayLabel}"
+                                               TextColor="White" FontSize="15"
+                                               VerticalOptions="Center" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Icon}"
+                                               FontSize="18"
+                                               VerticalOptions="Center" />
+                                        <Grid Grid.Column="2"
+                                              ColumnDefinitions="40,*,40"
+                                              VerticalOptions="Center"
+                                              Padding="8,0">
+                                            <Label Text="{Binding TemperatureMin, StringFormat='{0:F0}°'}"
+                                                   TextColor="#667788" FontSize="14" />
+                                            <BoxView Grid.Column="1"
+                                                     HeightRequest="4"
+                                                     CornerRadius="2"
+                                                     Color="#2A4060"
+                                                     VerticalOptions="Center" />
+                                            <Label Grid.Column="2"
+                                                   Text="{Binding TemperatureMax, StringFormat='{0:F0}°'}"
+                                                   TextColor="White" FontSize="14"
+                                                   HorizontalOptions="End" />
+                                        </Grid>
+                                        <Label Grid.Column="3"
+                                               Text="{Binding PrecipitationProbabilityMax, StringFormat='{0}%'}"
+                                               TextColor="#5B9BD5" FontSize="12"
+                                               VerticalOptions="Center"
+                                               HorizontalOptions="End"
+                                               IsVisible="{Binding PrecipitationProbabilityMax, Converter={StaticResource IntToBoolConverter}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Detail Cards Grid -->
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+
+                    <!-- Sunrise/Sunset -->
+                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 16" BackgroundColor="#1A2744" Padding="16">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="🌅 SUNRISE" FontSize="11" TextColor="#667788" FontAttributes="Bold" />
+                            <Label Text="{Binding Weather.DailyForecasts[0].Sunrise, StringFormat='{0:h:mm tt}'}"
+                                   TextColor="White" FontSize="22" FontAttributes="Bold" />
+                            <Label TextColor="#8899AA" FontSize="12">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Sunset " />
+                                        <Span Text="{Binding Weather.DailyForecasts[0].Sunset, StringFormat='{0:h:mm tt}'}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Visibility -->
+                    <Border Grid.Column="1" StrokeThickness="0" StrokeShape="RoundRectangle 16" BackgroundColor="#1A2744" Padding="16">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="👁️ VISIBILITY" FontSize="11" TextColor="#667788" FontAttributes="Bold" />
+                            <Label Text="{Binding Weather.Current.VisibilityDisplay}"
+                                   TextColor="White" FontSize="22" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Wind -->
+                    <Border Grid.Row="1" StrokeThickness="0" StrokeShape="RoundRectangle 16" BackgroundColor="#1A2744" Padding="16">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="💨 WIND" FontSize="11" TextColor="#667788" FontAttributes="Bold" />
+                            <Label Text="{Binding Weather.Current.WindSpeed, StringFormat='{0:F0} mph'}"
+                                   TextColor="White" FontSize="22" FontAttributes="Bold" />
+                            <Label Text="{Binding Weather.Current.WindDirection, StringFormat='Direction: {0:F0}°'}"
+                                   TextColor="#8899AA" FontSize="12" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Air Quality -->
+                    <Border Grid.Row="1" Grid.Column="1" StrokeThickness="0" StrokeShape="RoundRectangle 16" BackgroundColor="#1A2744" Padding="16">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="🌬️ AIR QUALITY" FontSize="11" TextColor="#667788" FontAttributes="Bold" />
+                            <Label Text="{Binding Weather.AirQuality.UsAqi, StringFormat='{0}'}"
+                                   TextColor="White" FontSize="22" FontAttributes="Bold" />
+                            <Label Text="{Binding Weather.AirQuality.Level}"
+                                   TextColor="#8899AA" FontSize="12" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- UV Index -->
+                    <Border Grid.Row="2" StrokeThickness="0" StrokeShape="RoundRectangle 16" BackgroundColor="#1A2744" Padding="16">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="☀️ UV INDEX" FontSize="11" TextColor="#667788" FontAttributes="Bold" />
+                            <Label Text="{Binding Weather.Current.UvIndex, StringFormat='{0:F0}'}"
+                                   TextColor="White" FontSize="22" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Humidity -->
+                    <Border Grid.Row="2" Grid.Column="1" StrokeThickness="0" StrokeShape="RoundRectangle 16" BackgroundColor="#1A2744" Padding="16">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="💧 HUMIDITY" FontSize="11" TextColor="#667788" FontAttributes="Bold" />
+                            <Label Text="{Binding Weather.Current.Humidity, StringFormat='{0:F0}%'}"
+                                   TextColor="White" FontSize="22" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Radar Button -->
+                <Button Text="🗺️  View Radar Map"
+                        FontSize="16"
+                        TextColor="White"
+                        BackgroundColor="#2A4060"
+                        CornerRadius="16"
+                        HeightRequest="52"
+                        Command="{Binding OpenRadarMapCommand}"
+                        Margin="0,8" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Loading Overlay -->
+        <Grid BackgroundColor="#CC0F1624"
+              IsVisible="{Binding IsLoading}">
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                               Color="White"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center" />
+        </Grid>
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:StupidHabitTracker.ViewModels"
+             x:Class="StupidHabitTracker.Views.TimerPage"
+             x:DataType="vm:TimerViewModel"
+             Title="Timer"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="24,60,24,24" BackgroundColor="{StaticResource BackgroundLight}">
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0" Spacing="4" Padding="0,0,0,16">
+            <Label Text="Habit Timer"
+                   Style="{StaticResource TitleLabel}"
+                   FontSize="32" />
+            <Label Text="What are you working on?"
+                   Style="{StaticResource SubtitleLabel}" />
+        </VerticalStackLayout>
+
+        <!-- Main Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="24">
+
+                <!-- Habit Name Input Card -->
+                <Frame Style="{StaticResource Card}" Padding="20">
+                    <Entry Text="{Binding HabitName}"
+                           Placeholder="Type a habit name..."
+                           Style="{StaticResource HabitEntry}"
+                           FontSize="20"
+                           IsEnabled="{Binding IsRunning, Converter={StaticResource BoolInverse}}"
+                           ReturnType="Go"
+                           ReturnCommand="{Binding ToggleTimerCommand}" />
+                </Frame>
+
+                <!-- Recent Habits -->
+                <VerticalStackLayout Spacing="8"
+                                     IsVisible="{Binding IsRunning, Converter={StaticResource BoolInverse}}">
+                    <Label Text="Recent"
+                           Style="{StaticResource CaptionLabel}"
+                           Margin="4,0,0,0"
+                           IsVisible="{Binding RecentHabits.Count, Converter={StaticResource IntToBool}}" />
+                    <FlexLayout BindableLayout.ItemsSource="{Binding RecentHabits}"
+                                Wrap="Wrap"
+                                JustifyContent="Start"
+                                AlignItems="Start">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Button Text="{Binding .}"
+                                        Style="{StaticResource ChipButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TimerViewModel}}, Path=SelectHabitCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Margin="0,0,8,8" />
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+
+                <!-- Timer Display -->
+                <Frame Style="{StaticResource Card}" Padding="32,40">
+                    <VerticalStackLayout Spacing="16" HorizontalOptions="Center">
+
+                        <!-- Timer Circle -->
+                        <Grid HeightRequest="200" WidthRequest="200" HorizontalOptions="Center">
+                            <!-- Background ring -->
+                            <Ellipse Stroke="{StaticResource TimerRingBackground}"
+                                     StrokeThickness="8"
+                                     HeightRequest="200"
+                                     WidthRequest="200"
+                                     Fill="Transparent" />
+                            <!-- Active ring (visible when running) -->
+                            <Ellipse Stroke="{StaticResource Primary}"
+                                     StrokeThickness="8"
+                                     HeightRequest="200"
+                                     WidthRequest="200"
+                                     Fill="Transparent"
+                                     IsVisible="{Binding IsRunning}"
+                                     Opacity="0.9" />
+                            <!-- Time display -->
+                            <Label Text="{Binding ElapsedDisplay}"
+                                   Style="{StaticResource TimerDisplay}"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Center" />
+                        </Grid>
+
+                        <!-- Habit name while running -->
+                        <Label Text="{Binding HabitName}"
+                               Style="{StaticResource SubtitleLabel}"
+                               HorizontalTextAlignment="Center"
+                               IsVisible="{Binding IsRunning}" />
+
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Last Session Summary -->
+                <Frame Style="{StaticResource Card}"
+                       BackgroundColor="{StaticResource PrimaryLight}"
+                       BorderColor="Transparent"
+                       IsVisible="{Binding ShowLastSession}"
+                       Padding="16">
+                    <Label Text="{Binding LastSessionSummary}"
+                           Style="{StaticResource BodyLabel}"
+                           TextColor="{StaticResource Primary}"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center" />
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Action Buttons -->
+        <Grid Grid.Row="2" Padding="0,16,0,0" ColumnDefinitions="*,Auto,*" ColumnSpacing="16">
+
+            <!-- Pause/Resume (only when running) -->
+            <Button Grid.Column="0"
+                    Text="{Binding IsPaused, Converter={StaticResource PauseResumeText}}"
+                    Style="{StaticResource PrimaryButton}"
+                    BackgroundColor="{StaticResource Warning}"
+                    Command="{Binding PauseResumeCommand}"
+                    IsVisible="{Binding IsRunning}"
+                    HorizontalOptions="End"
+                    WidthRequest="100"
+                    HeightRequest="64"
+                    CornerRadius="32" />
+
+            <!-- Main Start/Stop Button -->
+            <Button Grid.Column="1"
+                    Text="{Binding ActionButtonText}"
+                    HeightRequest="80"
+                    WidthRequest="80"
+                    CornerRadius="40"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    TextColor="White"
+                    BackgroundColor="{StaticResource Success}"
+                    Command="{Binding ToggleTimerCommand}"
+                    IsEnabled="{Binding HasHabitName}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding IsRunning}" Value="True">
+                        <Setter Property="BackgroundColor" Value="{StaticResource Danger}" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <!-- Spacer -->
+            <BoxView Grid.Column="2" WidthRequest="100" IsVisible="{Binding IsRunning}" />
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

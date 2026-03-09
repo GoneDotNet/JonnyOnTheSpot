@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:WeatherApp.ViewModels"
+             xmlns:models="clr-namespace:WeatherApp.Models"
+             x:Class="WeatherApp.Views.AddLocationPage"
+             x:DataType="vm:AddLocationViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,Auto,*" BackgroundColor="#0F1624" Padding="16,60,16,0">
+
+        <!-- Header -->
+        <Grid ColumnDefinitions="Auto,*,Auto" Padding="0,0,0,16">
+            <Button Text="Cancel"
+                    TextColor="#5B9BD5"
+                    BackgroundColor="Transparent"
+                    FontSize="16"
+                    Command="{Binding CancelCommand}" />
+            <Label Grid.Column="1"
+                   Text="Add Location"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="White"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </Grid>
+
+        <!-- Search Bar -->
+        <Border Grid.Row="1"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 12"
+                BackgroundColor="#1A2744"
+                Padding="12,8"
+                Margin="0,0,0,8">
+            <Entry Placeholder="Search for a city..."
+                   PlaceholderColor="#556677"
+                   TextColor="White"
+                   FontSize="16"
+                   BackgroundColor="Transparent"
+                   Text="{Binding SearchText}" />
+        </Border>
+
+        <!-- Results -->
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout Spacing="2">
+
+                <!-- Use Current Location -->
+                <Border StrokeThickness="0"
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="#1A2744"
+                        Padding="16"
+                        Margin="0,0,0,8">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding UseCurrentLocationCommand}" />
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="12">
+                        <Label Text="📍" FontSize="20" VerticalOptions="Center" />
+                        <Label Text="Use Current Location"
+                               TextColor="#5B9BD5"
+                               FontSize="16"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Search Results -->
+                <CollectionView ItemsSource="{Binding SearchResults}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:GeocodingResult">
+                            <Border StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 10"
+                                    BackgroundColor="#1A2744"
+                                    Padding="16"
+                                    Margin="0,0,0,4">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AddLocationViewModel}}, Path=SelectLocationCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding Name}"
+                                           TextColor="White"
+                                           FontSize="16"
+                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding DisplayName}"
+                                           TextColor="#8899AA"
+                                           FontSize="13" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Searching Indicator -->
+                <ActivityIndicator IsRunning="{Binding IsSearching}"
+                                   IsVisible="{Binding IsSearching}"
+                                   Color="White"
+                                   HorizontalOptions="Center"
+                                   Margin="0,20" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>

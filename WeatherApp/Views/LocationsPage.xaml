@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:WeatherApp.ViewModels"
+             xmlns:models="clr-namespace:WeatherApp.Models"
+             x:Class="WeatherApp.Views.LocationsPage"
+             x:DataType="vm:LocationsViewModel"
+             Title=""
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="#0F1624">
+
+        <!-- Header -->
+        <Grid Padding="20,60,20,15" ColumnDefinitions="*,Auto">
+            <Label Text="Weather"
+                   FontSize="34"
+                   FontAttributes="Bold"
+                   TextColor="White" />
+            <Button Grid.Column="1"
+                    Text="＋"
+                    FontSize="28"
+                    TextColor="White"
+                    BackgroundColor="Transparent"
+                    Command="{Binding AddLocationCommand}" />
+        </Grid>
+
+        <!-- Content -->
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding LoadLocationsCommand}"
+                     RefreshColor="White">
+            <ScrollView>
+                <VerticalStackLayout Spacing="12" Padding="16,0,16,20">
+
+                    <!-- Current Location Card -->
+                    <Border IsVisible="{Binding HasCurrentLocation}"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 20"
+                            Padding="20"
+                            BackgroundColor="#1A2744">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateToCurrentDetailCommand}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                            <Label Text="📍 My Location"
+                                   FontSize="14"
+                                   TextColor="#8899AA" />
+                            <Label Grid.Row="1"
+                                   Text="{Binding CurrentLocationSummary.Location.Name}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
+                            <Label Grid.Row="2"
+                                   TextColor="#8899AA"
+                                   FontSize="14">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding CurrentLocationSummary.Description}" />
+                                        <Span Text="  H:" />
+                                        <Span Text="{Binding CurrentLocationSummary.TemperatureHigh, StringFormat='{0:F0}°'}" />
+                                        <Span Text=" L:" />
+                                        <Span Text="{Binding CurrentLocationSummary.TemperatureLow, StringFormat='{0:F0}°'}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Column="1"
+                                   Grid.RowSpan="3"
+                                   VerticalOptions="Center"
+                                   FontSize="48"
+                                   TextColor="White">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding CurrentLocationSummary.Icon}" FontSize="28" />
+                                        <Span Text=" " />
+                                        <Span Text="{Binding CurrentLocationSummary.Temperature, StringFormat='{0:F0}°'}" FontSize="48" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </Grid>
+                    </Border>
+
+                    <!-- Saved Locations -->
+                    <CollectionView ItemsSource="{Binding Locations}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:LocationWeatherSummary">
+                                <SwipeView Threshold="100">
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Delete"
+                                                       BackgroundColor="#E74C3C"
+                                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:LocationsViewModel}}, Path=RemoveLocationCommand}"
+                                                       CommandParameter="{Binding .}" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Border StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 16"
+                                            Padding="20"
+                                            Margin="0,0,0,4"
+                                            BackgroundColor="#1A2744">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:LocationsViewModel}}, Path=NavigateToDetailCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                            <Label Text="{Binding Location.DisplayName}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"
+                                                   TextColor="White" />
+                                            <Label Grid.Row="1"
+                                                   TextColor="#8899AA"
+                                                   FontSize="14">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding Description}" />
+                                                        <Span Text="  H:" />
+                                                        <Span Text="{Binding TemperatureHigh, StringFormat='{0:F0}°'}" />
+                                                        <Span Text=" L:" />
+                                                        <Span Text="{Binding TemperatureLow, StringFormat='{0:F0}°'}" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Label Grid.Column="1"
+                                                   Grid.RowSpan="2"
+                                                   VerticalOptions="Center"
+                                                   TextColor="White">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding Icon}" FontSize="24" />
+                                                        <Span Text=" " />
+                                                        <Span Text="{Binding Temperature, StringFormat='{0:F0}°'}" FontSize="36" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </Grid>
+                                    </Border>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                        <CollectionView.EmptyView>
+                            <VerticalStackLayout VerticalOptions="Center"
+                                                 HorizontalOptions="Center"
+                                                 Spacing="10"
+                                                 Padding="20,40">
+                                <Label Text="🌤️"
+                                       FontSize="48"
+                                       HorizontalOptions="Center" />
+                                <Label Text="No locations added yet"
+                                       FontSize="18"
+                                       TextColor="#8899AA"
+                                       HorizontalOptions="Center" />
+                                <Label Text="Tap + to add a city"
+                                       FontSize="14"
+                                       TextColor="#556677"
+                                       HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </CollectionView.EmptyView>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+
+</ContentPage>

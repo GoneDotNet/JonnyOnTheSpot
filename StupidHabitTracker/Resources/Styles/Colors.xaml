@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Primary Palette -->
+    <Color x:Key="Primary">#4F46E5</Color>
+    <Color x:Key="PrimaryDark">#818CF8</Color>
+    <Color x:Key="PrimaryLight">#E0E7FF</Color>
+
+    <!-- Accent -->
+    <Color x:Key="Accent">#F97316</Color>
+    <Color x:Key="AccentDark">#FB923C</Color>
+
+    <!-- Semantic Colors -->
+    <Color x:Key="Success">#10B981</Color>
+    <Color x:Key="SuccessDark">#34D399</Color>
+    <Color x:Key="Danger">#EF4444</Color>
+    <Color x:Key="DangerDark">#F87171</Color>
+    <Color x:Key="Warning">#F59E0B</Color>
+
+    <!-- Neutrals - Light -->
+    <Color x:Key="BackgroundLight">#F8FAFC</Color>
+    <Color x:Key="SurfaceLight">#FFFFFF</Color>
+    <Color x:Key="CardLight">#FFFFFF</Color>
+    <Color x:Key="BorderLight">#E2E8F0</Color>
+    <Color x:Key="TextPrimaryLight">#1E293B</Color>
+    <Color x:Key="TextSecondaryLight">#64748B</Color>
+    <Color x:Key="TextTertiaryLight">#94A3B8</Color>
+
+    <!-- Neutrals - Dark -->
+    <Color x:Key="BackgroundDark">#0F172A</Color>
+    <Color x:Key="SurfaceDark">#1E293B</Color>
+    <Color x:Key="CardDark">#334155</Color>
+    <Color x:Key="BorderDark">#475569</Color>
+    <Color x:Key="TextPrimaryDark">#F1F5F9</Color>
+    <Color x:Key="TextSecondaryDark">#94A3B8</Color>
+    <Color x:Key="TextTertiaryDark">#64748B</Color>
+
+    <!-- Timer Ring Colors -->
+    <Color x:Key="TimerRingBackground">#E2E8F0</Color>
+    <Color x:Key="TimerRingBackgroundDark">#334155</Color>
+    <Color x:Key="TimerRingActive">#4F46E5</Color>
+    <Color x:Key="TimerRingActiveDark">#818CF8</Color>
+
+    <!-- App-wide semantic resources that follow AppTheme -->
+    <Color x:Key="PageBackground">#F8FAFC</Color>
+
+</ResourceDictionary>

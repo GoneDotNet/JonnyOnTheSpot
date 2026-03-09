@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:WeatherApp.ViewModels"
+             x:Class="WeatherApp.Views.RadarMapPage"
+             x:DataType="vm:RadarMapViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid BackgroundColor="#0F1624">
+        <!-- Back Button Overlay -->
+        <Button Text="‹ Back"
+                FontSize="16"
+                TextColor="White"
+                BackgroundColor="#88000000"
+                CornerRadius="20"
+                Padding="12,6"
+                Margin="16,60,0,0"
+                HorizontalOptions="Start"
+                VerticalOptions="Start"
+                ZIndex="10"
+                Clicked="OnBackClicked" />
+
+        <WebView x:Name="RadarWebView"
+                 VerticalOptions="Fill"
+                 HorizontalOptions="Fill" />
+
+        <!-- Loading Overlay -->
+        <Grid BackgroundColor="#CC0F1624"
+              IsVisible="{Binding IsLoading}">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12">
+                <ActivityIndicator IsRunning="{Binding IsLoading}" Color="White" />
+                <Label Text="Loading radar data..." TextColor="#8899AA" FontSize="14" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+
+</ContentPage>
