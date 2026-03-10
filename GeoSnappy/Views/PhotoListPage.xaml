@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GeoSnappy.ViewModels"
+             xmlns:models="clr-namespace:GeoSnappy.Models"
+             xmlns:conv="clr-namespace:GeoSnappy.Converters"
+             x:Class="GeoSnappy.Views.PhotoListPage"
+             x:DataType="vm:PhotoListViewModel"
+             Title="📸 GeoSnappy"
+             BackgroundColor="{StaticResource PageBackground}">
+
+    <ContentPage.Resources>
+        <conv:FilePathToImageSourceConverter x:Key="FileToImage" />
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*,Auto">
+
+        <RefreshView Grid.Row="0"
+                     Command="{Binding LoadPhotosCommand}"
+                     IsRefreshing="{Binding IsRefreshing}">
+
+            <CollectionView ItemsSource="{Binding Photos}"
+                            SelectionMode="None"
+                            Margin="12,8">
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center"
+                                         HorizontalOptions="Center"
+                                         Spacing="16"
+                                         Padding="40">
+                        <Label Text="📷"
+                               FontSize="64"
+                               HorizontalOptions="Center" />
+                        <Label Text="No snaps yet!"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{StaticResource Primary}" />
+                        <Label Text="Tap the camera button below to capture your first GeoSnappy moment."
+                               FontSize="16"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{StaticResource TextSecondary}"
+                               Margin="20,0" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Photo">
+                        <Frame Margin="0,6"
+                               Padding="0"
+                               CornerRadius="16"
+                               HasShadow="True"
+                               BackgroundColor="{StaticResource CardBackground}"
+                               BorderColor="Transparent">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PhotoListViewModel}}, Path=NavigateToDetailCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="120,*" RowDefinitions="Auto">
+                                <Image Source="{Binding FullFilePath, Converter={StaticResource FileToImage}}"
+                                       Aspect="AspectFill"
+                                       HeightRequest="100"
+                                       WidthRequest="120">
+                                    <Image.Clip>
+                                        <RoundRectangleGeometry Rect="0,0,120,100" CornerRadius="16,0,16,0" />
+                                    </Image.Clip>
+                                </Image>
+
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Padding="14,12"
+                                                     Spacing="6"
+                                                     VerticalOptions="Center">
+                                    <Label Text="{Binding Title}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource TextPrimary}"
+                                           MaxLines="2"
+                                           LineBreakMode="TailTruncation" />
+                                    <HorizontalStackLayout Spacing="4">
+                                        <Label Text="📍"
+                                               FontSize="12" />
+                                        <Label Text="{Binding Latitude, StringFormat='{0:F4}'}"
+                                               FontSize="12"
+                                               TextColor="{StaticResource TextSecondary}" />
+                                        <Label Text=","
+                                               FontSize="12"
+                                               TextColor="{StaticResource TextSecondary}" />
+                                        <Label Text="{Binding Longitude, StringFormat='{0:F4}'}"
+                                               FontSize="12"
+                                               TextColor="{StaticResource TextSecondary}" />
+                                    </HorizontalStackLayout>
+                                    <Label Text="{Binding CapturedAt, StringFormat='{0:MMM dd, yyyy  h:mm tt}'}"
+                                           FontSize="11"
+                                           TextColor="{StaticResource TextTertiary}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Floating Action Button -->
+        <Button Grid.Row="1"
+                Text="📷  Snap!"
+                Command="{Binding TakePhotoCommand}"
+                FontSize="18"
+                FontAttributes="Bold"
+                HeightRequest="56"
+                Margin="20,8,20,20"
+                CornerRadius="28"
+                BackgroundColor="{StaticResource Primary}"
+                TextColor="White"
+                Shadow="{StaticResource FabShadow}" />
+
+        <!-- Busy overlay -->
+        <Grid Grid.RowSpan="2"
+              BackgroundColor="#80000000"
+              IsVisible="{Binding IsBusy}">
+            <VerticalStackLayout VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Spacing="12">
+                <ActivityIndicator IsRunning="True"
+                                   Color="White"
+                                   HeightRequest="48"
+                                   WidthRequest="48" />
+                <Label Text="Snapping..."
+                       FontSize="18"
+                       TextColor="White"
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

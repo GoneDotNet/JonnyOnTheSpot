@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GeoSnappy.ViewModels"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
+             xmlns:conv="clr-namespace:GeoSnappy.Converters"
+             x:Class="GeoSnappy.Views.PhotoDetailPage"
+             x:DataType="vm:PhotoDetailViewModel"
+             Title="Snap Details"
+             BackgroundColor="{StaticResource PageBackground}">
+
+    <ContentPage.Resources>
+        <conv:FilePathToImageSourceConverter x:Key="FileToImage" />
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="0" Padding="0">
+
+            <!-- Photo -->
+            <Image Source="{Binding Photo.FullFilePath, Converter={StaticResource FileToImage}}"
+                   Aspect="AspectFill"
+                   HeightRequest="320" />
+
+            <!-- Content card -->
+            <Frame Margin="16,-32,16,0"
+                   Padding="20"
+                   CornerRadius="20"
+                   HasShadow="True"
+                   BackgroundColor="{StaticResource CardBackground}"
+                   BorderColor="Transparent">
+                <VerticalStackLayout Spacing="14">
+
+                    <!-- Title -->
+                    <Label Text="{Binding Photo.Title}"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}" />
+
+                    <!-- Location -->
+                    <HorizontalStackLayout Spacing="6">
+                        <Label Text="📍" FontSize="16" />
+                        <Label FontSize="14" TextColor="{StaticResource TextSecondary}">
+                            <Label.Text>
+                                <MultiBinding StringFormat="{}{0:F6}, {1:F6}">
+                                    <Binding Path="Photo.Latitude" />
+                                    <Binding Path="Photo.Longitude" />
+                                </MultiBinding>
+                            </Label.Text>
+                        </Label>
+                    </HorizontalStackLayout>
+
+                    <!-- Timestamp -->
+                    <HorizontalStackLayout Spacing="6">
+                        <Label Text="🕐" FontSize="16" />
+                        <Label Text="{Binding Photo.CapturedAt, StringFormat='{0:MMMM dd, yyyy  h:mm tt}'}"
+                               FontSize="14"
+                               TextColor="{StaticResource TextSecondary}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Map -->
+            <Frame Margin="16,16"
+                   Padding="0"
+                   CornerRadius="16"
+                   HasShadow="True"
+                   BackgroundColor="{StaticResource CardBackground}"
+                   BorderColor="Transparent"
+                   HeightRequest="280">
+                <maps:Map x:Name="PhotoMap"
+                          MapType="Street"
+                          IsShowingUser="False"
+                          IsScrollEnabled="True"
+                          IsZoomEnabled="True">
+                </maps:Map>
+            </Frame>
+
+            <!-- Delete button -->
+            <Button Text="🗑️  Delete Snap"
+                    Command="{Binding DeletePhotoCommand}"
+                    Margin="16,4,16,24"
+                    HeightRequest="50"
+                    CornerRadius="25"
+                    BackgroundColor="{StaticResource Danger}"
+                    TextColor="White"
+                    FontSize="16"
+                    FontAttributes="Bold" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
